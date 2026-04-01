@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>繪本之森：兒童節立體閱讀冒險</title>
+    <style>
+        /* CSS 變數設定：配色與字體 */
+        :root {
+            --bg-color: #E0FFFF; /* Light Cyan */
+            --main-text-color: #5F9EA0; /* Cadet Blue */
+            --accent-pink: #FFB6C1; /* Light Pink */
+            --accent-lemon: #FFFACD; /* Lemon Chiffon */
+            --paper-white: #FFFFFF;
+            --shadow-color: rgba(0, 0, 0, 0.15); /* 柔和的紙張陰影 */
+            
+            /* 字體設定 */
+            --font-header: "Kiwi Maru", "Noto Sans TC", sans-serif; /* 圓潤手寫感 */
+            --font-body: "Noto Sans TC", sans-serif; /* 高可讀性 */
+        }
+
+        /* 引入圓潤手寫風格字體 (Kiwi Maru) */
+        @import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+        /* 全局樣式：畫用紙紋理背景 */
+        body {
+            background-color: var(--bg-color);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.05"/></svg>');
+            color: var(--main-text-color);
+            font-family: var(--font-body);
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 容器與版面配置：不單調的整列 */
+        .container {
+            max-width: 1000px;
+            width: 90%;
+            margin: 3rem auto;
+            padding: 0;
+        }
+
+        /* --- 1. 標題スライド (Title Slide) 風格 --- */
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+            padding: 2rem;
+            background: var(--paper-white);
+            border-radius: 20px;
+            box-shadow: 3px 3px 10px var(--shadow-color); /* 層次感 */
+        }
+
+        header::before, header::after { /* 裝飾用的小紙片 */
+            content: '';
+            position: absolute;
+            width: 40px; height: 40px;
+            background: var(--accent-pink);
+            border-radius: 5px;
+            opacity: 0.6;
+            transform: rotate(-15deg);
+        }
+        header::before { top: -10px; left: -10px; }
+        header::after { bottom: -10px; right: -10px; background: var(--accent-lemon); transform: rotate(15deg); }
+
+        header h1 {
+            font-family: var(--font-header);
+            font-size: 2.8rem;
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(135deg, var(--main-text-color), #4682B4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* 紙から切り出したような文字表現 (稍微歪斜) */
+            transform: rotate(-1deg);
+        }
+
+        header p { margin: 0; font-size: 1.1rem; opacity: 0.8; }
+
+        /* --- 2. 概要スライド (Summary Slide) 風格 --- */
+        .intro {
+            display: flex;
+            background: var(--paper-white);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 5px 5px 15px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 左側の要點見出し */
+        .intro-title {
+            flex: 1;
+            font-family: var(--font-header);
+            font-size: 1.8rem;
+            color: var(--main-text-color);
+            padding-right: 2rem;
+            border-right: 2px dashed var(--accent-pink);
+            margin-right: 2rem;
+        }
+
+        /* 右側の要約文 */
+        .intro-content { flex: 2; font-size: 1rem; }
+        .intro-content strong { color: #E53E3E; /* 活力紅，突出重點 */ }
+
+        /* 背景に溶け込む紙雕モチーフ */
+        .intro::after {
+            content: '🌲📖'; /* テーマに沿うモチーフのみ */
+            position: absolute;
+            font-size: 6rem;
+            bottom: -20px; right: 20px;
+            opacity: 0.1;
+        }
+
+        /* --- 3. 複数ページ一覧 / サムネイルグリッド是不可的 --- */
+        /* 相反地，我們使用「整列」且具有「穏やかなリズム」的 Shadow Box 卡片 */
+        .event-list {
+            display: grid;
+            grid-template-columns: 1fr; /* 單欄，保持秩序 */
+            gap: 2.5rem;
+        }
+
+        /* --- Shadow box / Paper Cutout 核心樣式 --- */
+        .event-card {
+            background: var(--paper-white);
+            border-radius: 15px;
+            padding: 2rem;
+            /* 複数枚の紙の重なり (Shadow Box effect) */
+            box-shadow: 
+                2px 2px 0px var(--paper-white),
+                4px 4px 0px var(--shadow-color),
+                6px 6px 0px var(--paper-white),
+                8px 8px 15px var(--shadow-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ホバー時の洗練された動き */
+        .event-card:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 
+                2px 2px 0px var(--paper-white),
+                6px 6px 0px var(--accent-lemon),
+                10px 10px 20px var(--shadow-color);
+        }
+
+        /* 紙雕風的裝飾邊框 (わずかな歪み) */
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 6px;
+            background: linear-gradient(90deg, var(--accent-pink) 50%, var(--accent-lemon) 50%);
+            background-size: 20px 6px;
+        }
+
+        .event-header { display: flex; align-items: center; margin-bottom: 1rem; }
+        
+        /* 象徵ビジュアル (不目立ちすぎないが印象に残る) */
+        .event-icon {
+            font-size: 2.5rem;
+            margin-right: 1.5rem;
+            background: var(--bg-color);
+            width: 70px; height: 70px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            border: 3px solid var(--paper-white);
+            box-shadow: inset 2px 2px 5px var(--shadow-color);
+        }
+
+        .event-title-group { flex-grow: 1; }
+
+        .event-card h3 {
+            font-family: var(--font-header);
+            font-size: 1.5rem;
+            margin: 0;
+            color: #4682B4; /* 稍微深的藍 */
+        }
+
+        .event-location { font-size: 0.9rem; color: #888; margin: 0.2rem 0 0 0; }
+
+        .event-desc {
+            font-size: 0.95rem;
+            color: var(--main-text-color);
+            margin-bottom: 1.5rem;
+            /* 園長點評的專業與落ち着き */
+            border-left: 3px solid var(--accent-lemon);
+            padding-left: 1rem;
+        }
+
+        /* --- 按鈕：洗練與不致目立ちすぎ --- */
+        .btn-box { text-align: right; margin-top: auto; }
+        .btn-link {
+            display: inline-block;
+            background-color: var(--accent-pink);
+            color: #FFF;
+            padding: 10px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            /* 紙から切り出したような按鈕表現 */
+            box-shadow: 3px 3px 0px #F8BBD0; /* 深一點的粉 */
+            transition: 0.2s;
+        }
+
+        .btn-link:hover {
+            background-color: #F8BBD0;
+            box-shadow: 1px 1px 0px #F8BBD0;
+            transform: translate(2px, 2px);
+        }
+
+        /* --- Footer：コンタクトシート風 --- */
+        footer {
+            text-align: center;
+            padding: 3rem;
+            margin-top: 4rem;
+            width: 100%;
+            background: var(--paper-white);
+            border-top: 2px dashed var(--main-text-color);
+            box-shadow: 0 -5px 15px var(--shadow-color);
+        }
+
+        footer p { margin: 0.5rem 0; font-size: 0.9rem; color: #A0AEC0; }
+        footer strong { color: var(--main-text-color); }
+
+        /* RWD 響應式設計：行動裝置優化 */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            .intro { flex-direction: column; padding: 1.5rem; }
+            .intro-title { border-right: none; border-bottom: 2px dashed var(--accent-pink); padding-right: 0; padding-bottom: 1rem; margin-right: 0; margin-bottom: 1rem; }
+            .event-header { flex-direction: column; text-align: center; }
+            .event-icon { margin-right: 0; margin-bottom: 1rem; }
+            .event-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>兒童節：繪本裡的奇幻飛行</h1>
+        <p>🍃 假日走讀深情推薦 🍃</p>
+    </header>
+
+    <section class="intro">
+        <div class="intro-title">📍 幼兒園老師的<br>閱讀社群導覽</div>
+        <div class="intro-content">
+            兒童節即將到來，正是引導幼兒進行深度閱讀與藝術體驗的最佳契機。這份清單彙整了全台五大專業展演，包含國家圖書館的<strong>「立體故事盒」</strong>與桃園兒美館的<strong>「想像力劇場」</strong>。這些活動融合了美學精神，能為各位老師在課程設計與環境佈置上提供豐富的專業靈感。讓我們帶著孩子，開啟一場與繪本藝術的立體對話！
+        </div>
+    </section>
+
+    <section class="event-list">
+        
+        <article class="event-card">
+            <div class="event-header">
+                <div class="event-icon">✂️</div>
+                <div class="event-title-group">
+                    <h3>我的經典繪本由我來展演</h3>
+                    <p class="event-location">國家圖書館 | 📅 4/01 - 5/15</p>
+                </div>
+            </div>
+            <div class="event-desc">
+                園長推薦：這是一次完美的「平面閱讀轉立體場景」示範！邀請師生挑選喜愛的繪本，利用環保材料（如鞋盒）製作可攜帶的「Story Box（行動故事盒）」。這能極大化深化幼兒的說故事能力、空間創造力與想像力，非常適合作為園內的學習單延伸活動。
+            </div>
+            <div class="btn-box">
+                <a href="https://guide.ncl.edu.tw/event/2026423/" target="_blank" class="btn-link">查看活動詳情</a>
+            </div>
+        </article>
+
+        <article class="event-card">
+            <div class="event-header">
+                <div class="event-icon">🧸</div>
+                <div class="event-title-group">
+                    <h3>走進白希那的繪本世界</h3>
+                    <p class="event-location">桃園市立圖書館 | 📅 3/28 - 4/12</p>
+                </div>
+            </div>
+            <div class="event-desc">
+                園長推薦：白希那（Baek Heena）是2020年林格倫紀念獎得主，其作品本身就是微縮模型的極致展現。此展覽結合了手作與角色遊行，能為您的課程佈置帶來全新的美學觀點，特別是如何呈現故事中的色彩與材質感。
+            </div>
+            <div class="btn-box">
+                <a href="https://www.typl.gov.tw/zh-tw/Activity/Content/9196" target="_blank" class="btn-link">展覽資訊查詢</a>
+            </div>
+        </article>
+
+        <article class="event-card">
+            <div class="event-header">
+                <div class="event-icon">🎒</div>
+                <div class="event-title-group">
+                    <h3>《小旅人 · 大旅程》</h3>
+                    <p class="event-location">桃園市兒童美術館 | 📅 3/28 - 6/28</p>
+                </div>
+            </div>
+            <div class="event-desc">
+                園長推薦：以「劇場」為隱喻，將插畫與繪本轉化為具備時間與空間感的場域。展場中匯聚了原畫與立體互動裝置。這能為閱讀計畫中關於空間佈局的部分，提供多元的策展靈感。
+            </div>
+            <div class="btn-box">
+                <a href="https://tmofa.tycg.gov.tw/ch/exhibitions/current-exhibitions/152" target="_blank" class="btn-link">兒美館參觀資訊</a>
+            </div>
+        </article>
+
+        <article class="event-card">
+            <div class="event-header">
+                <div class="event-icon">♻️</div>
+                <div class="event-title-group">
+                    <h3>創作中的反覆與堆疊</h3>
+                    <p class="event-location">國立台灣美術館 | 📅 兒童節期間</p>
+                </div>
+            </div>
+            <div class="event-desc">
+                園長推薦：這個展覽探討「反覆與堆疊」的創作過程，這與繪本故事中的節奏感有異曲同工之妙。最關鍵的是其與SDGs永續發展的潛在連結，您可以觀察藝術家如何將日常物件（廢棄物）轉化為藝術，這也是幼兒食農與永續教育的好素材。
+            </div>
+            <div class="btn-box">
+                <a href="https://event.culture.tw/mocweb/reg/NTMOFA/Detail.init.ctr?actId=55022" target="_blank" class="btn-link">查看活動詳情</a>
+            </div>
+        </article>
+
+        <article class="event-card">
+            <div class="event-header">
+                <div class="event-icon">🌳</div>
+                <div class="event-title-group">
+                    <h3>臺北市立美術館｜造公園</h3>
+                    <p class="event-location">北美館兒童藝術中心 | 📅 兒童節期間</p>
+                </div>
+            </div>
+            <div class="event-desc">
+                園長推薦：公園是幼兒最熟悉的遊戲場，此展覽將北美館的兒藝中心轉化為一個「造公園」的藝術實驗室。您可以觀察如何透過藝術引導幼兒探索自然與城市空間的關係，這對您的「臺北捷運繪本走讀」計畫中的戶外空間規劃非常有啟發。
+            </div>
+            <div class="btn-box">
+                <a href="https://www.tfam.museum/Exhibition/Exhibition_Special.aspx?ddlLang=zh-tw&id=804" target="_blank" class="btn-link">兒藝中心資訊</a>
+            </div>
+        </article>
+
+    </section>
+</div>
+
+<footer>
+    <p>整理編輯：小豆子團隊</p>
+   
+    <p>此網頁內容僅供閱讀社群幼兒園老師內部參考使用，祝各位老師兒童節快樂！</p>
+</footer>
+
+</body>
+</html>
